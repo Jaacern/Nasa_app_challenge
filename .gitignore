@@ -106,3 +106,8 @@ coverage/
 # Deployment files
 .vercel
 .netlify
+
+.env
+
+api.js
+package.json
