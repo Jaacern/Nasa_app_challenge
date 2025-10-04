@@ -2,7 +2,7 @@
 
 ![AstroImpact Logo](./frontend/public/logo.png)
 
-# 🚀 AstroImpact Simulator
+# 🚀 Zuricatas Simulator
 ### *Simulador de Impactos de Asteroides con Datos Reales de la NASA*
 
 [![NASA Space Apps Challenge](https://img.shields.io/badge/NASA-Space%20Apps%20Challenge%202025-blue?style=for-the-badge&logo=nasa)](https://www.spaceappschallenge.org/)
@@ -19,9 +19,9 @@
 
 </div>
 
-## 🌟 ¿Qué es AstroImpact?
+## 🌟 ¿Qué es Zuricatas Simulator?
 
-**AstroImpact** es una aplicación web de última generación desarrollada para el **NASA Space Apps Challenge 2025** bajo el tema **"Meteor Madness"**. Esta plataforma full-stack permite simular escenarios de impacto de asteroides utilizando datos reales de la NASA, ayudando a comprender las consecuencias potenciales y explorar estrategias de mitigación.
+**Zuricatas Simulator** es una aplicación web de última generación desarrollada para el **NASA Space Apps Challenge 2025** bajo el tema **"Meteor Madness"**. Esta plataforma full-stack permite simular escenarios de impacto de asteroides utilizando datos reales de la NASA, ayudando a comprender las consecuencias potenciales y explorar estrategias de mitigación.
 
 ### 🎯 Características Principales
 
@@ -100,8 +100,8 @@
 
 ```bash
 # 1️⃣ Clonar el repositorio
-git clone https://github.com/tu-usuario/astroimpact-simulator.git
-cd astroimpact-simulator
+git clone https://github.com/tu-usuario/zuricatas-simulator.git
+cd zuricatas-simulator
 
 # 2️⃣ Instalar dependencias
 npm run install-all
@@ -116,7 +116,7 @@ cp exampleenv.txt backend/.env
 ```env
 NODE_ENV=development
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/astroimpact
+MONGODB_URI=mongodb://localhost:27017/zuricatas
 JWT_SECRET=tu_clave_secreta_super_segura
 NASA_API_KEY=tu_clave_api_nasa
 FRONTEND_URL=http://localhost:3000
@@ -183,7 +183,7 @@ Altura_Tsunami = 0.1 × TNT_equivalente^0.25
 ## 🏗️ Arquitectura del Proyecto
 
 ```
-astroimpact-simulator/
+zuricatas-simulator/
 ├── 🎨 frontend/                 # React.js Frontend
 │   ├── src/
 │   │   ├── components/          # Componentes React
@@ -357,7 +357,7 @@ Este proyecto fue creado para el **NASA Space Apps Challenge 2025**, específica
 
 | 📧 **Email** | 💬 **Discusiones** | 🐛 **Issues** | 📖 **Documentación** |
 |:---:|:---:|:---:|:---:|
-| [Contacto](mailto:team@astroimpact.com) | [GitHub Discussions](https://github.com/tu-usuario/astroimpact-simulator/discussions) | [Reportar Bug](https://github.com/tu-usuario/astroimpact-simulator/issues) | [Docs](https://docs.astroimpact.com) |
+| [Contacto](mailto:team@zuricatas.com) | [GitHub Discussions](https://github.com/tu-usuario/zuricatas-simulator/discussions) | [Reportar Bug](https://github.com/tu-usuario/zuricatas-simulator/issues) | [Docs](https://docs.zuricatas.com) |
 
 </div>
 
@@ -384,9 +384,9 @@ Este proyecto fue creado para el **NASA Space Apps Challenge 2025**, específica
 
 ### 🚀 **¡Únete a la misión de proteger nuestro planeta!**
 
-[![GitHub stars](https://img.shields.io/github/stars/tu-usuario/astroimpact-simulator?style=social)](https://github.com/tu-usuario/astroimpact-simulator/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/tu-usuario/astroimpact-simulator?style=social)](https://github.com/tu-usuario/astroimpact-simulator/network)
-[![GitHub watchers](https://img.shields.io/github/watchers/tu-usuario/astroimpact-simulator?style=social)](https://github.com/tu-usuario/astroimpact-simulator/watchers)
+[![GitHub stars](https://img.shields.io/github/stars/tu-usuario/zuricatas-simulator?style=social)](https://github.com/tu-usuario/zuricatas-simulator/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/tu-usuario/zuricatas-simulator?style=social)](https://github.com/tu-usuario/zuricatas-simulator/network)
+[![GitHub watchers](https://img.shields.io/github/watchers/tu-usuario/zuricatas-simulator?style=social)](https://github.com/tu-usuario/zuricatas-simulator/watchers)
 
 **⭐ ¡Dale una estrella si te gusta el proyecto!**
 
