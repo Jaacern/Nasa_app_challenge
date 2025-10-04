@@ -97,3 +97,4 @@ fi
 
 log "🎉 Actualización completada exitosamente!"
 log "📊 Para ver logs: sudo journalctl -u $SERVICE_NAME -f"
+

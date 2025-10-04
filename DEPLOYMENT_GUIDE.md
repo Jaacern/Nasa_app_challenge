@@ -227,3 +227,4 @@ Si encuentras problemas:
 - **API**: https://tu-dominio.com/api/
 - **VR Experience**: https://tu-dominio.com/vr
 - **Logs**: `/var/log/nginx/astroimpact.access.log`
+

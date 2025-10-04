@@ -240,3 +240,4 @@ log "¡Despliegue completado exitosamente!"
 info "Tu aplicación está disponible en: https://$DOMAIN_NAME"
 info "Para ver logs del backend: sudo journalctl -u $SERVICE_NAME -f"
 info "Para ver logs de Nginx: sudo tail -f /var/log/nginx/$APP_NAME.access.log"
+
