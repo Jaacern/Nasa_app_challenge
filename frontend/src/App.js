@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Simulator from './pages/Simulator';
 import Community from './pages/Community';
-import Leaderboard from './pages/Leaderboard';
+// import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -40,7 +40,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/asteroids" element={<AsteroidExplorer />} />
           <Route path="/community" element={<Community />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
+          {/* <Route path="/leaderboard" element={<Leaderboard />} /> */}
           <Route path="/simulation/:id" element={<SimulationResults />} />
           {/* Temporarily disabled 3D routes */}
           <Route path="/3d-test" element={<Enhanced3DTest />} />

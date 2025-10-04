@@ -46,12 +46,7 @@ const Navigation = () => {
               </Nav.Link>
             </LinkContainer>
             
-            <LinkContainer to="/leaderboard">
-              <Nav.Link>
-                <i className="bi bi-trophy me-1"></i>
-                Leaderboard
-              </Nav.Link>
-            </LinkContainer>
+              {/* Leaderboard eliminado */}
             
             <LinkContainer to="/orbits">
               <Nav.Link>

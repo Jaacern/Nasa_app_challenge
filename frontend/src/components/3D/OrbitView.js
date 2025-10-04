@@ -1,8 +1,8 @@
 import React, { useMemo, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html, useTexture } from '@react-three/drei';
 
-// Textured Earth sphere with clouds
+// 🌍 Textured Earth sphere with clouds
 const EarthSphere = () => {
   const earthRef = useRef();
   const cloudsRef = useRef();
@@ -26,7 +26,7 @@ const EarthSphere = () => {
   );
 };
 
-// Orbit path ellipse ring (in XZ plane, later rotated via parent group)
+// 🌀 Orbit path ellipse ring
 const OrbitRing = ({ a, b }) => {
   const points = useMemo(() => {
     const segments = 160;
@@ -53,108 +53,78 @@ const OrbitRing = ({ a, b }) => {
   );
 };
 
-// One orbiting asteroid marker
-const OrbitingAsteroid = ({ asteroid, index }) => {
+// ☄️ One orbiting asteroid marker con órbita
+const OrbitingAsteroid = React.forwardRef(({ asteroid, index, isSelected }, refProp) => {
   const ref = useRef();
   const groupRef = useRef();
   const [hovered, setHovered] = React.useState(false);
 
-  // Derive simple orbit parameters
   const avgDiameter = asteroid?.calculatedProperties?.averageDiameter ||
     asteroid?.estimated_diameter?.meters?.estimated_diameter_max || 200;
   const velocityKps = Number(
     asteroid?.close_approach_data?.[0]?.relative_velocity?.kilometers_per_second
   ) || asteroid?.calculatedProperties?.averageVelocity || 10;
 
-  // Map miss distance (km) to orbit radius units (scene units)
   const missKm = Number(asteroid?.close_approach_data?.[0]?.miss_distance?.kilometers) || 3.8e5;
-  const aSemi = useMemo(() => {
-    // Scale: 12,000 km -> 1 scene unit, clamp to [1.2, 12]
-    const r = Math.max(1.2, Math.min(12, missKm / 12000));
-    return r;
-  }, [missKm]);
-
-  // Ellipse minor axis b depends on velocity and index for variety
+  const aSemi = useMemo(() => Math.max(1.2, Math.min(12, missKm / 12000)), [missKm]);
   const bSemi = useMemo(() => {
-    const vNorm = Math.max(1, Math.min(50, velocityKps)) / 50; // 0..1
+    const vNorm = Math.max(1, Math.min(50, velocityKps)) / 50;
     const factor = 0.55 + 0.35 * (0.3 + (index % 7) / 10) * (1 - vNorm);
     return Math.max(0.6, Math.min(aSemi, aSemi * factor));
   }, [aSemi, velocityKps, index]);
 
-  // Size scaled down a lot for readability
   const size = Math.max(0.03, Math.min(0.15, (avgDiameter / 1000) * 0.05));
 
-  // Base phase based on epoch and id to place asteroid along its ellipse
   const epochMs = Number(asteroid?.close_approach_data?.[0]?.epoch_date_close_approach) || 0;
   const phase = useMemo(() => {
     const base = (epochMs / 1e7) % (Math.PI * 2);
     return base + (index % 16) * (Math.PI / 8);
   }, [epochMs, index]);
 
-  // Deterministic orientation from id
   const idSeed = (asteroid?.neo_reference_id || String(asteroid?._id || index))
     .split('')
     .reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  const inclination = ((idSeed % 45) - 22.5) * (Math.PI / 180); // -22.5..22.5 deg
-  const omega = ((idSeed % 360) * Math.PI) / 180; // longitude of ascending node
+  const inclination = ((idSeed % 45) - 22.5) * (Math.PI / 180);
+  const omega = ((idSeed % 360) * Math.PI) / 180;
   const argPeriapsis = (((idSeed * 3) % 360) * Math.PI) / 180;
 
-  // Angular speed for visible circling motion
   const angularSpeed = useMemo(() => {
     const v = Math.max(1, Math.min(50, velocityKps));
     return (v / 50) * 0.7 / Math.max(0.8, (aSemi + bSemi) / 2);
   }, [velocityKps, aSemi, bSemi]);
 
-  // Animate position along ellipse
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     const theta = phase + t * angularSpeed;
     const x = Math.cos(theta) * aSemi;
     const z = Math.sin(theta) * bSemi;
-    const y = 0;
-    if (ref.current) ref.current.position.set(x, y, z);
+    if (ref.current) ref.current.position.set(x, 0, z);
+    if (refProp?.current) refProp.current.position.set(x, 0, z);
   });
 
-  const fmt = {
-    m: (v) => (v == null || isNaN(v) ? 'N/A' : `${Number(v).toFixed(0)} m`),
-    kps: (v) => (v == null || isNaN(v) ? 'N/A' : `${Number(v).toFixed(2)} km/s`),
-    sci: (v) => {
-      if (v == null || isNaN(v)) return 'N/A';
-      const n = Number(v);
-      if (n === 0) return '0 J';
-      const e = Math.floor(Math.log10(Math.abs(n)));
-      const mant = n / Math.pow(10, e);
-      return `${mant.toFixed(2)}e${e} J`;
-    }
-  };
-
-  // Diameter (single value): prefer calculated average, else mean of min/max meters
   const diameterM = useMemo(() => {
-    if (asteroid?.calculatedProperties?.averageDiameter) {
+    if (asteroid?.calculatedProperties?.averageDiameter)
       return asteroid.calculatedProperties.averageDiameter;
-    }
     const minM = asteroid?.estimated_diameter?.meters?.estimated_diameter_min;
     const maxM = asteroid?.estimated_diameter?.meters?.estimated_diameter_max;
     if (minM && maxM) return (Number(minM) + Number(maxM)) / 2;
     return undefined;
   }, [asteroid]);
 
-  // Velocity km/s
   const velocityKmS = Number(
     asteroid?.close_approach_data?.[0]?.relative_velocity?.kilometers_per_second
   ) || asteroid?.calculatedProperties?.averageVelocity;
 
-  // Kinetic energy: use provided; else 0.5*m*v^2 with v in m/s
   const kineticEnergyJ = useMemo(() => {
-    if (asteroid?.calculatedProperties?.kineticEnergy) {
+    if (asteroid?.calculatedProperties?.kineticEnergy)
       return asteroid.calculatedProperties.kineticEnergy;
-    }
-    const mass = asteroid?.calculatedProperties?.mass; // kg
-    const vms = velocityKmS ? Number(velocityKmS) * 1000 : undefined; // m/s
+    const mass = asteroid?.calculatedProperties?.mass;
+    const vms = velocityKmS ? Number(velocityKmS) * 1000 : undefined;
     if (mass && vms) return 0.5 * mass * vms * vms;
     return undefined;
   }, [asteroid, velocityKmS]);
 
+  // Renderizar órbita elíptica
   return (
     <group ref={groupRef} rotation={[inclination, omega, argPeriapsis]}>
       <OrbitRing a={aSemi} b={bSemi} />
@@ -181,30 +151,46 @@ const OrbitingAsteroid = ({ asteroid, index }) => {
                 {asteroid?.name || asteroid?.neo_reference_id || 'Asteroid'}
               </div>
               <div style={{ opacity: 0.9 }}>
-                <div><b>Name:</b> {asteroid?.name || 'N/A'}</div>
-                <div><b>Diameter:</b> {fmt.m(diameterM)}</div>
-                <div><b>Velocity:</b> {fmt.kps(velocityKmS)}</div>
-                <div><b>Kinetic Energy:</b> {fmt.sci(kineticEnergyJ)}</div>
-                <div><b>Hazard Level:</b> {asteroid?.is_potentially_hazardous_asteroid ? 'Hazardous' : 'Not Hazardous'}</div>
+                <div><b>Diameter:</b> {diameterM ? `${diameterM.toFixed(0)} m` : 'N/A'}</div>
+                <div><b>Velocity:</b> {velocityKmS ? `${velocityKmS.toFixed(2)} km/s` : 'N/A'}</div>
+                <div><b>Kinetic Energy:</b> {kineticEnergyJ ? `${kineticEnergyJ.toExponential(2)} J` : 'N/A'}</div>
               </div>
             </div>
           </Html>
         )}
+        {isSelected && (
+          <mesh position={[0, size * 2.7, 0]}>
+            <coneGeometry args={[size * 1.2, size * 2.2, 3]} />
+            <meshStandardMaterial color="#ffeb3b" emissive="#fff200" emissiveIntensity={0.7} />
+          </mesh>
+        )}
       </mesh>
     </group>
   );
-};
+});
 
-const StarsBackground = () => {
-  return (
-    <mesh>
-      <sphereGeometry args={[60, 32, 32]} />
-      <meshBasicMaterial color="#000010" side={1} />
-    </mesh>
-  );
-};
+// 🌌 Fondo estrellado
+const StarsBackground = () => (
+  <mesh>
+    <sphereGeometry args={[60, 32, 32]} />
+    <meshBasicMaterial color="#000010" side={1} />
+  </mesh>
+);
 
-const Scene = ({ asteroids }) => {
+// 🎥 Escena principal
+const Scene = ({ asteroids = [], selectedAsteroid }) => {
+  const asteroidRef = useRef();
+  const { camera } = useThree();
+
+  // Seguir asteroide si está activado
+  useFrame(() => {
+    if (window.followAsteroid && asteroids.length === 1 && asteroidRef.current) {
+      const pos = asteroidRef.current.position;
+      camera.position.set(pos.x + 2.5, pos.y + 2.5, pos.z + 6);
+      camera.lookAt(pos.x, pos.y, pos.z);
+    }
+  });
+
   return (
     <>
       <ambientLight intensity={0.45} />
@@ -215,7 +201,13 @@ const Scene = ({ asteroids }) => {
       <group>
         <EarthSphere />
         {asteroids?.map((a, i) => (
-          <OrbitingAsteroid key={a._id || i} asteroid={a} index={i} />
+          <OrbitingAsteroid
+            key={a._id || i}
+            asteroid={a}
+            index={i}
+            isSelected={selectedAsteroid && asteroids.length === 1 && (a._id === selectedAsteroid._id)}
+            ref={asteroids.length === 1 ? asteroidRef : undefined}
+          />
         ))}
       </group>
 
@@ -224,16 +216,13 @@ const Scene = ({ asteroids }) => {
   );
 };
 
-const OrbitView = ({ asteroids = [] }) => {
-  return (
-    <div style={{ width: '100%', height: '600px', borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
-      <Canvas shadows camera={{ position: [0, 3, 10], fov: 50 }}>
-        <Scene asteroids={asteroids} />
-      </Canvas>
-    </div>
-  );
-};
+// 🪐 Contenedor principal con Canvas
+const OrbitView = ({ asteroids = [], selectedAsteroid }) => (
+  <div style={{ width: '100%', height: '600px', borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
+    <Canvas shadows camera={{ position: [0, 3, 10], fov: 50 }}>
+      <Scene asteroids={asteroids} selectedAsteroid={selectedAsteroid} />
+    </Canvas>
+  </div>
+);
 
 export default OrbitView;
-
-

@@ -6,70 +6,7 @@ const { auth, optionalAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // Get user leaderboard
-router.get('/leaderboard', async (req, res) => {
-  try {
-    const { 
-      page = 1, 
-      limit = 20, 
-      sortBy = 'stats.points',
-      timeframe = 'all' // all, month, week
-    } = req.query;
-
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-
-    // Build date filter for timeframe
-    let dateFilter = {};
-    if (timeframe === 'month') {
-      const monthAgo = new Date();
-      monthAgo.setMonth(monthAgo.getMonth() - 1);
-      dateFilter = { createdAt: { $gte: monthAgo } };
-    } else if (timeframe === 'week') {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      dateFilter = { createdAt: { $gte: weekAgo } };
-    }
-
-    // Get top users by points
-    const users = await User.find({ isActive: true })
-      .select('username profile stats createdAt')
-      .sort({ [sortBy]: -1, createdAt: 1 })
-      .skip(skip)
-      .limit(parseInt(limit))
-      .lean();
-
-    // Get additional stats for each user
-    const usersWithStats = await Promise.all(
-      users.map(async (user) => {
-        const recentSimulations = await Simulation.countDocuments({
-          user: user._id,
-          ...dateFilter
-        });
-
-        return {
-          ...user,
-          recentActivity: recentSimulations
-        };
-      })
-    );
-
-    const total = await User.countDocuments({ isActive: true });
-
-    res.json({
-      leaderboard: usersWithStats,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages: Math.ceil(total / parseInt(limit)),
-        totalItems: total,
-        itemsPerPage: parseInt(limit)
-      }
-    });
-  } catch (error) {
-    console.error('Leaderboard fetch error:', error);
-    res.status(500).json({ error: 'Failed to fetch leaderboard' });
-  }
-});
-
-// Get user profile by username
+// Leaderboard endpoint eliminado
 router.get('/profile/:username', optionalAuth, async (req, res) => {
   try {
     const { username } = req.params;
