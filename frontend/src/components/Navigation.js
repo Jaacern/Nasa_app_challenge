@@ -63,6 +63,14 @@ const Navigation = () => {
                 <Badge bg="success" className="ms-1">NEW</Badge>
               </Nav.Link>
             </LinkContainer>
+
+            <LinkContainer to="/vr">
+              <Nav.Link>
+                <i className="bi bi-vr me-1"></i>
+                VR Experience
+                <Badge bg="warning" className="ms-1">VR</Badge>
+              </Nav.Link>
+            </LinkContainer>
           </Nav>
           
           <Nav>
