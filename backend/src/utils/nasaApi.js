@@ -46,7 +46,7 @@ class NASAApiService {
       const response = await axios.get(url, {
         timeout: 30000, // Increased timeout to 30 seconds
         headers: {
-          'User-Agent': 'AstroImpact-Simulator/1.0'
+          'User-Agent': 'Zuricatas-Simulator/1.0'
         }
       });
 
@@ -67,7 +67,7 @@ class NASAApiService {
       const response = await axios.get(url, {
         timeout: 10000,
         headers: {
-          'User-Agent': 'AstroImpact-Simulator/1.0'
+          'User-Agent': 'Zuricatas-Simulator/1.0'
         }
       });
 

@@ -1,7 +1,7 @@
 {
-  "name": "astroimpact-simulator",
+  "name": "zuricatas-simulator",
   "version": "1.0.0",
-  "description": "AstroImpact Simulator - NASA Space Apps Challenge 2025",
+  "description": "Zuricatas Simulator - NASA Space Apps Challenge 2025",
   "main": "index.js",
   "scripts": {
     "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",

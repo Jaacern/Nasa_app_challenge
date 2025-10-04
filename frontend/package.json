@@ -1,7 +1,7 @@
 {
-  "name": "astroimpact-simulator-frontend",
+  "name": "zuricatas-simulator-frontend",
   "version": "1.0.0",
-  "description": "Frontend for AstroImpact Simulator - NASA Space Apps Challenge 2025",
+  "description": "Frontend for Zuricatas Simulator - NASA Space Apps Challenge 2025",
   "private": true,
   "dependencies": {
     "@react-three/drei": "^9.88.0",
@@ -30,7 +30,7 @@
     "three-mesh-bvh": "^0.6.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

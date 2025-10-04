@@ -1,4 +1,4 @@
-# AstroImpact Simulator: Comprehensive Project Documentation
+# Zuricatas Simulator: Comprehensive Project Documentation
 ## 2025 NASA Space Apps Challenge - Meteor Madness
 
 ---
@@ -20,7 +20,7 @@
 
 ## 🌍 Project Overview
 
-**AstroImpact Simulator** is a sophisticated web-based application developed for the 2025 NASA Space Apps Challenge under the "Meteor Madness" theme. This full-stack MERN application provides an interactive platform for simulating asteroid impact scenarios using real NASA data, enabling users to understand potential consequences and explore mitigation strategies.
+**Zuricatas Simulator** is a sophisticated web-based application developed for the 2025 NASA Space Apps Challenge under the "Meteor Madness" theme. This full-stack MERN application provides an interactive platform for simulating asteroid impact scenarios using real NASA data, enabling users to understand potential consequences and explore mitigation strategies.
 
 ### Key Statistics
 - **Technology Stack**: MERN (MongoDB, Express.js, React.js, Node.js)
@@ -433,7 +433,7 @@ Students and users will:
 
 ## 📝 Conclusion
 
-The AstroImpact Simulator represents a significant contribution to planetary defense education and public awareness. By combining cutting-edge web technologies with scientifically accurate modeling, the platform transforms complex astronomical concepts into accessible, interactive experiences.
+The Zuricatas Simulator represents a significant contribution to planetary defense education and public awareness. By combining cutting-edge web technologies with scientifically accurate modeling, the platform transforms complex astronomical concepts into accessible, interactive experiences.
 
 ### Key Achievements
 1. **Scientific Accuracy**: Implements validated USGS impact calculation methods
@@ -449,7 +449,7 @@ Our ultimate goal is to create a global platform that:
 - Inspires the next generation of space scientists and engineers
 - Demonstrates the power of international cooperation in facing global challenges
 
-The AstroImpact Simulator is more than just a simulation tool—it's a catalyst for education, research, and global collaboration in the critical field of planetary defense. As we face real asteroid threats in our solar system, tools like this help ensure that humanity is prepared, informed, and united in our response to these cosmic challenges.
+The Zuricatas Simulator is more than just a simulation tool—it's a catalyst for education, research, and global collaboration in the critical field of planetary defense. As we face real asteroid threats in our solar system, tools like this help ensure that humanity is prepared, informed, and united in our response to these cosmic challenges.
 
 ---
 
@@ -465,4 +465,4 @@ For questions, contributions, or collaboration opportunities:
 
 ---
 
-*This document represents the comprehensive overview of the AstroImpact Simulator project developed for the 2025 NASA Space Apps Challenge "Meteor Madness" theme. The project demonstrates the power of technology in education and the importance of global collaboration in addressing planetary-scale challenges.*
+*This document represents the comprehensive overview of the Zuricatas Simulator project developed for the 2025 NASA Space Apps Challenge "Meteor Madness" theme. The project demonstrates the power of technology in education and the importance of global collaboration in addressing planetary-scale challenges.*

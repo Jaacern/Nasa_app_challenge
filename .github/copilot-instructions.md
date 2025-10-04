@@ -1,4 +1,4 @@
-# AstroImpact Simulator - NASA Space Apps Challenge Project
+# Zuricatas Simulator - NASA Space Apps Challenge Project
 
 ## Project Overview
 This is a MERN stack application for the 2025 NASA Space Apps Challenge "Meteor Madness" challenge. The app simulates asteroid impact scenarios using real NASA data.

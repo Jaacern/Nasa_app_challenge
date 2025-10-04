@@ -59,7 +59,7 @@ const Leaderboard = () => {
                   <i className="bi bi-trophy me-2 text-warning"></i>
                   Leaderboard
                 </h1>
-                <p className="text-light">Top contributors to the AstroImpact community</p>
+                <p className="text-light">Top contributors to the Zuricatas community</p>
               </div>
             </div>
           </Col>

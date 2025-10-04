@@ -104,7 +104,7 @@ const Register = () => {
             <Card.Header className="text-center">
               <h3 className="mb-0">
                 <i className="bi bi-person-plus me-2"></i>
-                Join AstroImpact
+                Join Zuricatas
               </h3>
               <p className="text-muted mt-2">Create your account to start simulating asteroid impacts</p>
             </Card.Header>

@@ -38,7 +38,7 @@ const Home = () => {
             <Row className="align-items-center min-vh-100">
               <Col lg={6}>
                 <h1 className="display-4 fw-bold mb-4 text-glow">
-                  AstroImpact Simulator
+                  Zuricatas Simulator
                 </h1>
                 <p className="lead mb-4 text-secondary">
                   Explore asteroid impact scenarios using real NASA data. Model devastating 

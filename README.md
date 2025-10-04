@@ -1,4 +1,4 @@
-# AstroImpact Simulator
+# Zuricatas Simulator
 
 A full-stack web application for simulating asteroid impact scenarios using real NASA data. Built for the 2025 NASA Space Apps Challenge "Meteor Madness" challenge.
 

@@ -1,6 +1,6 @@
 # 3D Asteroid Impact Visualization
 
-This document describes the 3D visualization features integrated into the AstroImpact Simulator.
+This document describes the 3D visualization features integrated into the Zuricatas Simulator.
 
 ## Overview
 

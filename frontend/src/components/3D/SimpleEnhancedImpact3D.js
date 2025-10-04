@@ -25,7 +25,7 @@ const SimpleEarth = ({ impactLocation }) => {
       <mesh ref={earthRef}>
         <sphereGeometry args={[2, 64, 32]} />
         <meshStandardMaterial
-          color="#4A90E2"
+          color="#ff6b35"
           transparent
           opacity={0.8}
         />

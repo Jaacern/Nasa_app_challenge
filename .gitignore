@@ -106,5 +106,3 @@ coverage/
 # Deployment files
 .vercel
 .netlify
-
-.env

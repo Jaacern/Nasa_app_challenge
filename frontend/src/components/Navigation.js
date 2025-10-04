@@ -12,7 +12,7 @@ const Navigation = () => {
         <LinkContainer to="/">
           <Navbar.Brand>
             <i className="bi bi-rocket-takeoff me-2"></i>
-            AstroImpact
+            Zuricatas
           </Navbar.Brand>
         </LinkContainer>
         

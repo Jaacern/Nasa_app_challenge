@@ -209,7 +209,7 @@ const Scene = ({ asteroids }) => {
     <>
       <ambientLight intensity={0.45} />
       <directionalLight position={[6, 8, 5]} intensity={1} castShadow />
-      <pointLight position={[-6, -4, -4]} intensity={0.3} color="#4A90E2" />
+      <pointLight position={[-6, -4, -4]} intensity={0.3} color="#ff6b35" />
 
       <StarsBackground />
       <group>

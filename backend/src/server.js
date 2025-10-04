@@ -23,7 +23,8 @@ app.set('trust proxy', 1);
 // CORS configuration
 const corsOptions = {
   origin: [
-    'http://localhost:3000',        // Development frontend
+    'http://localhost:3000',        // Development frontend (original)
+    'http://localhost:3001',        // Development frontend (new port)
     'https://astroimpact.vercel.app', // Production frontend
     process.env.FRONTEND_URL        // Environment-specific URL
   ].filter(Boolean), // Remove any undefined values
@@ -92,7 +93,7 @@ app.use('/api/users', userRoutes);
 // Home route
 app.get('/', (req, res) => {
   res.json({
-    message: 'AstroImpact Simulator API',
+    message: 'Zuricatas Simulator API',
     version: '1.0.0',
     challenge: 'NASA Space Apps Challenge 2025 - Meteor Madness',
     environment: process.env.NODE_ENV || 'development',

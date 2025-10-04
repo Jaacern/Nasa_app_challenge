@@ -481,10 +481,10 @@ const EnhancedImpactScene = ({
           <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
             Enhanced Impact Simulation
           </div>
-          <div>Phase: <span style={{ color: '#4A90E2' }}>{phase}</span></div>
-          <div>Progress: <span style={{ color: '#4A90E2' }}>{(progress * 100).toFixed(1)}%</span></div>
+          <div>Phase: <span style={{ color: '#ff6b35' }}>{phase}</span></div>
+          <div>Progress: <span style={{ color: '#ff6b35' }}>{(progress * 100).toFixed(1)}%</span></div>
           {asteroidData && (
-            <div>Asteroid: <span style={{ color: '#4A90E2' }}>{asteroidData.name || 'Test Asteroid'}</span></div>
+            <div>Asteroid: <span style={{ color: '#ff6b35' }}>{asteroidData.name || 'Test Asteroid'}</span></div>
           )}
           {impactLocation && (
             <div>
@@ -495,7 +495,7 @@ const EnhancedImpactScene = ({
                 const lngStr = Number.isFinite(lng) ? lng.toFixed(2) : 'N/A';
                 return (
                   <>
-                    Location: <span style={{ color: '#4A90E2' }}>{latStr}°, {lngStr}°</span>
+                    Location: <span style={{ color: '#ff6b35' }}>{latStr}°, {lngStr}°</span>
                   </>
                 );
               })()}
@@ -598,7 +598,7 @@ const EnhancedImpact3D = ({
         bottom: '10px',
         right: '10px',
         background: 'rgba(0, 0, 0, 0.7)',
-        color: '#4A90E2',
+        color: '#ff6b35',
         padding: '5px 10px',
         borderRadius: '4px',
         fontSize: '12px',
