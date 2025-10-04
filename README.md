@@ -1,6 +1,6 @@
 <div align="center">
 
-![AstroImpact Logo](./frontend/public/logo.png)
+![Logo](./logo.png)
 
 # 🚀 Zuricatas Simulator
 ### *Simulador de Impactos de Asteroides con Datos Reales de la NASA*
