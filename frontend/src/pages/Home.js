@@ -3,10 +3,12 @@ import { Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useAuth } from '../context/AuthContext';
 import { useSimulation } from '../context/SimulationContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
   const { fetchFeaturedAsteroids, getAsteroidStats, getSimulationStats } = useSimulation();
+  const { t } = useTranslation();
   const [featuredAsteroids, setFeaturedAsteroids] = useState([]);
   const [stats, setStats] = useState({});
 
@@ -36,33 +38,29 @@ const Home = () => {
         <Container>
           <div className="fade-in-animation">
             <Row className="align-items-center min-vh-100">
-              <Col lg={6}>
+              <Col lg={6} className="order-2 order-lg-1">
                 <h1 className="display-4 fw-bold mb-4 text-glow">
-                  Zuricatas Simulator
+                  {t('zuricatasSimulator')}
                 </h1>
                 <p className="lead mb-4 text-secondary">
-                  Explore asteroid impact scenarios using real NASA data. Model devastating 
-                  collisions, predict consequences, and develop mitigation strategies to 
-                  protect our planet.
+                  {t('exploreAsteroidImpact')}
                 </p>
                 <p className="mb-4">
-                  Built for the <strong>2025 NASA Space Apps Challenge</strong> - 
-                  addressing the "Meteor Madness" challenge with cutting-edge simulation 
-                  technology and real-time collaboration.
+                  {t('builtForNasa')}
                 </p>
-                <div className="d-flex gap-3 flex-wrap">
+                <div className="d-flex gap-3 flex-wrap justify-content-center justify-content-lg-start">
                   {isAuthenticated ? (
                     <LinkContainer to="/simulator">
                       <Button variant="primary" size="lg" className="hover-scale">
                         <i className="bi bi-rocket-takeoff me-2"></i>
-                        Start Simulation
+                        {t('startSimulation')}
                       </Button>
                     </LinkContainer>
                   ) : (
                     <LinkContainer to="/register">
                       <Button variant="primary" size="lg" className="hover-scale">
                         <i className="bi bi-person-plus me-2"></i>
-                        Get Started
+                        {t('getStarted')}
                       </Button>
                     </LinkContainer>
                   )}
@@ -70,13 +68,13 @@ const Home = () => {
                   <LinkContainer to="/asteroids">
                     <Button variant="outline-primary" size="lg" className="hover-scale">
                       <i className="bi bi-search me-2"></i>
-                      Explore Asteroids
+                      {t('exploreAsteroids')}
                     </Button>
                   </LinkContainer>
                 </div>
               </Col>
               
-              <Col lg={6} className="text-center">
+              <Col lg={6} className="order-1 order-lg-2 text-center">
                 <div className="hero-animation">
                   <div className="planet-earth">
                     <div className="asteroid-approaching"></div>
@@ -93,42 +91,42 @@ const Home = () => {
         <Container>
           <div className="slide-in-animation">
             <Row className="text-center">
-              <Col md={3} className="mb-4">
+              <Col xs={6} md={3} className="mb-4">
                 <Card className="glass-effect h-100">
-                  <Card.Body>
-                    <i className="bi bi-asterisk display-4 text-primary mb-3"></i>
-                    <h3 className="fw-bold">{stats.totalAsteroids || 0}</h3>
-                    <p className="text-muted">Asteroids Tracked</p>
+                  <Card.Body className="p-3 p-md-4">
+                    <i className="bi bi-asterisk display-4 text-primary mb-2 mb-md-3"></i>
+                    <h3 className="fw-bold h4">{stats.totalAsteroids || 0}</h3>
+                    <p className="text-muted small">{t('asteroidsTracked')}</p>
                   </Card.Body>
                 </Card>
               </Col>
               
-              <Col md={3} className="mb-4">
+              <Col xs={6} md={3} className="mb-4">
                 <Card className="glass-effect h-100">
-                  <Card.Body>
-                    <i className="bi bi-exclamation-triangle display-4 text-warning mb-3"></i>
-                    <h3 className="fw-bold">{stats.hazardousAsteroids || 0}</h3>
-                    <p className="text-muted">Potentially Hazardous</p>
+                  <Card.Body className="p-3 p-md-4">
+                    <i className="bi bi-exclamation-triangle display-4 text-warning mb-2 mb-md-3"></i>
+                    <h3 className="fw-bold h4">{stats.hazardousAsteroids || 0}</h3>
+                    <p className="text-muted small">{t('potentiallyHazardous')}</p>
                   </Card.Body>
                 </Card>
               </Col>
               
-              <Col md={3} className="mb-4">
+              <Col xs={6} md={3} className="mb-4">
                 <Card className="glass-effect h-100">
-                  <Card.Body>
-                    <i className="bi bi-cpu display-4 text-success mb-3"></i>
-                    <h3 className="fw-bold">{stats.totalSimulations || 0}</h3>
-                    <p className="text-muted">Simulations Run</p>
+                  <Card.Body className="p-3 p-md-4">
+                    <i className="bi bi-cpu display-4 text-success mb-2 mb-md-3"></i>
+                    <h3 className="fw-bold h4">{stats.totalSimulations || 0}</h3>
+                    <p className="text-muted small">{t('simulationsRun')}</p>
                   </Card.Body>
                 </Card>
               </Col>
               
-              <Col md={3} className="mb-4">
+              <Col xs={6} md={3} className="mb-4">
                 <Card className="glass-effect h-100">
-                  <Card.Body>
-                    <i className="bi bi-people display-4 text-info mb-3"></i>
-                    <h3 className="fw-bold">{stats.publicSimulations || 0}</h3>
-                    <p className="text-muted">Community Shares</p>
+                  <Card.Body className="p-3 p-md-4">
+                    <i className="bi bi-people display-4 text-info mb-2 mb-md-3"></i>
+                    <h3 className="fw-bold h4">{stats.publicSimulations || 0}</h3>
+                    <p className="text-muted small">{t('communityShares')}</p>
                   </Card.Body>
                 </Card>
               </Col>
@@ -142,10 +140,10 @@ const Home = () => {
         <Container>
           <Row>
             <Col>
-              <h2 className="text-center mb-5">Featured Near-Earth Asteroids</h2>
+              <h2 className="text-center mb-5">{t('featuredNearEarthAsteroids')}</h2>
               <Row>
                 {featuredAsteroids?.map((asteroid, index) => (
-                  <Col md={6} lg={4} key={asteroid._id} className="mb-4">
+                  <Col xs={12} sm={6} lg={4} key={asteroid._id} className="mb-4">
                     <Card className="h-100 hover-scale">
                       <Card.Header className="d-flex justify-content-between align-items-center">
                         <h6 className="mb-0 text-truncate" title={asteroid.name}>
@@ -154,35 +152,35 @@ const Home = () => {
                         {asteroid.is_potentially_hazardous_asteroid && (
                           <Badge bg="warning" text="dark">
                             <i className="bi bi-exclamation-triangle me-1"></i>
-                            Hazardous
+                            {t('hazardous')}
                           </Badge>
                         )}
                       </Card.Header>
                       
                       <Card.Body>
                         <div className="mb-3">
-                          <small className="text-muted">Diameter</small>
+                          <small className="text-muted">{t('diameter')}</small>
                           <div className="fw-bold">
                             {asteroid.calculatedProperties?.averageDiameter 
                               ? `${(asteroid.calculatedProperties.averageDiameter / 1000).toFixed(2)} km`
-                              : 'Unknown'
+                              : t('unknown')
                             }
                           </div>
                         </div>
                         
                         <div className="mb-3">
-                          <small className="text-muted">Velocity</small>
+                          <small className="text-muted">{t('velocity')}</small>
                           <div className="fw-bold">
                             {asteroid.calculatedProperties?.averageVelocity 
                               ? `${asteroid.calculatedProperties.averageVelocity.toFixed(2)} km/s`
-                              : 'Unknown'
+                              : t('unknown')
                             }
                           </div>
                         </div>
                         
                         {asteroid.calculatedProperties?.kineticEnergy && (
                           <div className="mb-3">
-                            <small className="text-muted">Kinetic Energy</small>
+                            <small className="text-muted">{t('kineticEnergy')}</small>
                             <div className="fw-bold">
                               {(asteroid.calculatedProperties.kineticEnergy / 1e15).toExponential(2)} PJ
                             </div>
@@ -198,14 +196,14 @@ const Home = () => {
                           }}>
                             <Button variant="primary" size="sm" className="w-100">
                               <i className="bi bi-play-circle me-1"></i>
-                              Simulate Impact
+                              {t('simulateImpact')}
                             </Button>
                           </LinkContainer>
                         ) : (
                           <LinkContainer to="/register">
                             <Button variant="outline-primary" size="sm" className="w-100">
                               <i className="bi bi-person-plus me-1"></i>
-                              Register to Simulate
+                              {t('registerToSimulate')}
                             </Button>
                           </LinkContainer>
                         )}
@@ -219,7 +217,7 @@ const Home = () => {
                 <LinkContainer to="/asteroids">
                   <Button variant="outline-primary">
                     <i className="bi bi-arrow-right me-2"></i>
-                    View All Asteroids
+                    {t('viewAllAsteroids')}
                   </Button>
                 </LinkContainer>
               </div>
@@ -233,51 +231,51 @@ const Home = () => {
         <Container>
           <Row>
             <Col>
-              <h2 className="text-center mb-5">Key Features</h2>
+              <h2 className="text-center mb-5">{t('keyFeatures')}</h2>
               <Row>
-                <Col md={6} lg={3} className="mb-4">
+                <Col xs={12} sm={6} lg={3} className="mb-4">
                   <Card className="glass-effect h-100 text-center">
-                    <Card.Body>
-                      <i className="bi bi-database display-4 text-primary mb-3"></i>
-                      <h5>Real NASA Data</h5>
-                      <p className="text-muted">
-                        Live asteroid data from NASA's NeoWs API with accurate orbital parameters.
+                    <Card.Body className="p-3 p-md-4">
+                      <i className="bi bi-database display-4 text-primary mb-2 mb-md-3"></i>
+                      <h5>{t('realNasaData')}</h5>
+                      <p className="text-muted small">
+                        {t('realNasaDataDesc')}
                       </p>
                     </Card.Body>
                   </Card>
                 </Col>
                 
-                <Col md={6} lg={3} className="mb-4">
+                <Col xs={12} sm={6} lg={3} className="mb-4">
                   <Card className="glass-effect h-100 text-center">
-                    <Card.Body>
-                      <i className="bi bi-geo-alt display-4 text-success mb-3"></i>
-                      <h5>Interactive Maps</h5>
-                      <p className="text-muted">
-                        Select impact locations worldwide with detailed consequence visualization.
+                    <Card.Body className="p-3 p-md-4">
+                      <i className="bi bi-geo-alt display-4 text-success mb-2 mb-md-3"></i>
+                      <h5>{t('interactiveMaps')}</h5>
+                      <p className="text-muted small">
+                        {t('interactiveMapsDesc')}
                       </p>
                     </Card.Body>
                   </Card>
                 </Col>
                 
-                <Col md={6} lg={3} className="mb-4">
+                <Col xs={12} sm={6} lg={3} className="mb-4">
                   <Card className="glass-effect h-100 text-center">
-                    <Card.Body>
-                      <i className="bi bi-shield-check display-4 text-warning mb-3"></i>
-                      <h5>Mitigation Planning</h5>
-                      <p className="text-muted">
-                        Design and test asteroid deflection strategies with effectiveness modeling.
+                    <Card.Body className="p-3 p-md-4">
+                      <i className="bi bi-shield-check display-4 text-warning mb-2 mb-md-3"></i>
+                      <h5>{t('mitigationPlanning')}</h5>
+                      <p className="text-muted small">
+                        {t('mitigationPlanningDesc')}
                       </p>
                     </Card.Body>
                   </Card>
                 </Col>
                 
-                <Col md={6} lg={3} className="mb-4">
+                <Col xs={12} sm={6} lg={3} className="mb-4">
                   <Card className="glass-effect h-100 text-center">
-                    <Card.Body>
-                      <i className="bi bi-people display-4 text-info mb-3"></i>
-                      <h5>Community Sharing</h5>
-                      <p className="text-muted">
-                        Share simulations, vote on strategies, and collaborate with other users.
+                    <Card.Body className="p-3 p-md-4">
+                      <i className="bi bi-people display-4 text-info mb-2 mb-md-3"></i>
+                      <h5>{t('communitySharing')}</h5>
+                      <p className="text-muted small">
+                        {t('communitySharingDesc')}
                       </p>
                     </Card.Body>
                   </Card>

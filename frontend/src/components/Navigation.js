@@ -1,18 +1,33 @@
 import React from 'react';
-import { Navbar, Nav, Container, Dropdown, Badge } from 'react-bootstrap';
+import { Navbar, Nav, Container, Dropdown, Badge, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const Navigation = () => {
   const { user, logout, isAuthenticated } = useAuth();
+  const { toggleLanguage, isSpanish } = useLanguage();
+  const { t } = useTranslation();
 
   return (
     <Navbar expand="lg" variant="dark" fixed="top" className="navbar-custom">
       <Container>
         <LinkContainer to="/">
-          <Navbar.Brand>
-            <i className="bi bi-rocket-takeoff me-2"></i>
-            Zuricatas
+          <Navbar.Brand className="d-flex align-items-center">
+            <img 
+              src="/logo.png" 
+              alt="Zuricatas Logo" 
+              style={{ height: '60px', width: 'auto', marginRight: '15px' }}
+              className="d-none d-sm-block"
+            />
+            <img 
+              src="/logo.png" 
+              alt="Zuricatas Logo" 
+              style={{ height: '40px', width: 'auto', marginRight: '10px' }}
+              className="d-block d-sm-none"
+            />
+            <span className="brand-text">Zuricatas</span>
           </Navbar.Brand>
         </LinkContainer>
         
@@ -23,7 +38,7 @@ const Navigation = () => {
             <LinkContainer to="/asteroids">
               <Nav.Link>
                 <i className="bi bi-search me-1"></i>
-                Explore Asteroids
+                {t('exploreAsteroids')}
               </Nav.Link>
             </LinkContainer>
             
@@ -42,7 +57,7 @@ const Navigation = () => {
             <LinkContainer to="/community">
               <Nav.Link>
                 <i className="bi bi-people me-1"></i>
-                Community
+                {t('community')}
               </Nav.Link>
             </LinkContainer>
             
@@ -51,7 +66,7 @@ const Navigation = () => {
             <LinkContainer to="/orbits">
               <Nav.Link>
                 <i className="bi bi-globe me-1"></i>
-                Orbits
+                {t('orbits')}
                 <Badge bg="info" className="ms-1">3D</Badge>
               </Nav.Link>
             </LinkContainer>
@@ -67,19 +82,32 @@ const Navigation = () => {
             <LinkContainer to="/vr">
               <Nav.Link>
                 <i className="bi bi-vr me-1"></i>
-                VR Experience
+                {t('vrExperience')}
                 <Badge bg="warning" className="ms-1">VR</Badge>
               </Nav.Link>
             </LinkContainer>
           </Nav>
           
           <Nav>
+            {/* Language Toggle Button */}
+            <Button
+              variant="outline-light"
+              size="sm"
+              onClick={toggleLanguage}
+              className="me-2 language-toggle"
+              title={isSpanish ? "Switch to English" : "Cambiar a Español"}
+            >
+              <i className={`bi ${isSpanish ? 'bi-translate' : 'bi-translate'} d-none d-sm-inline`}></i>
+              <span className="d-inline d-sm-none">{isSpanish ? 'EN' : 'ES'}</span>
+              <span className="d-none d-sm-inline">{isSpanish ? 'English' : 'Español'}</span>
+            </Button>
+            
             {isAuthenticated ? (
               <>
                 <LinkContainer to="/dashboard">
                   <Nav.Link>
                     <i className="bi bi-speedometer2 me-1"></i>
-                    Dashboard
+                    {t('dashboard')}
                   </Nav.Link>
                 </LinkContainer>
                 
@@ -98,7 +126,7 @@ const Navigation = () => {
                     <LinkContainer to="/profile">
                       <Dropdown.Item>
                         <i className="bi bi-person me-2"></i>
-                        Profile
+                        {t('profile')}
                       </Dropdown.Item>
                     </LinkContainer>
                     
@@ -106,7 +134,7 @@ const Navigation = () => {
                     
                     <Dropdown.Item onClick={logout}>
                       <i className="bi bi-box-arrow-right me-2"></i>
-                      Logout
+                      {t('logout')}
                     </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
@@ -116,14 +144,14 @@ const Navigation = () => {
                 <LinkContainer to="/login">
                   <Nav.Link>
                     <i className="bi bi-box-arrow-in-right me-1"></i>
-                    Login
+                    {t('login')}
                   </Nav.Link>
                 </LinkContainer>
                 
                 <LinkContainer to="/register">
                   <Nav.Link>
                     <i className="bi bi-person-plus me-1"></i>
-                    Register
+                    {t('register')}
                   </Nav.Link>
                 </LinkContainer>
               </>

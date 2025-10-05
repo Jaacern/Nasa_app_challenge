@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button, Table, Badge, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useSimulation } from '../context/SimulationContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const AsteroidExplorer = () => {
   const { fetchAsteroids, searchAsteroids, loading } = useSimulation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [asteroids, setAsteroids] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,7 +79,7 @@ const AsteroidExplorer = () => {
 
   const formatDiameter = (asteroid) => {
     const diameter = asteroid.calculatedProperties?.averageDiameter;
-    if (!diameter) return 'Unknown';
+    if (!diameter) return t('unknown');
     
     if (diameter >= 1000) {
       return `${(diameter / 1000).toFixed(2)} km`;
@@ -88,12 +90,12 @@ const AsteroidExplorer = () => {
 
   const formatVelocity = (asteroid) => {
     const velocity = asteroid.calculatedProperties?.averageVelocity;
-    return velocity ? `${velocity.toFixed(2)} km/s` : 'Unknown';
+    return velocity ? `${velocity.toFixed(2)} km/s` : t('unknown');
   };
 
   const formatEnergy = (asteroid) => {
     const energy = asteroid.calculatedProperties?.kineticEnergy;
-    if (!energy) return 'Unknown';
+    if (!energy) return t('unknown');
     
     if (energy >= 1e15) {
       return `${(energy / 1e15).toExponential(2)} PJ`;
@@ -112,9 +114,9 @@ const AsteroidExplorer = () => {
             <div>
               <h1>
                 <i className="bi bi-search me-2"></i>
-                Asteroid Explorer
+                {t('asteroidExplorer')}
               </h1>
-              <p className="text-muted">Browse NASA's near-Earth asteroid database</p>
+              <p className="text-muted">{t('browseNasaDatabase')}</p>
             </div>
           </div>
         </Col>
@@ -130,7 +132,7 @@ const AsteroidExplorer = () => {
                 <InputGroup>
                   <Form.Control
                     type="text"
-                    placeholder="Search asteroids by name or ID..."
+                    placeholder={t('searchAsteroids')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -142,41 +144,41 @@ const AsteroidExplorer = () => {
 
               {/* Filters */}
               <Row>
-                <Col md={6} lg={3} className="mb-3">
-                  <Form.Label>Hazard Level</Form.Label>
+                <Col xs={12} sm={6} lg={3} className="mb-3">
+                  <Form.Label>{t('hazardLevel')}</Form.Label>
                   <Form.Select
                     className='text-white bg-dark'
                     value={filters.hazardous}
                     onChange={(e) => handleFilterChange('hazardous', e.target.value)}
                   >
-                    <option value="">All Asteroids</option>
-                    <option value="true">Potentially Hazardous</option>
-                    <option value="false">Non-Hazardous</option>
+                    <option value="">{t('allAsteroids')}</option>
+                    <option value="true">{t('potentiallyHazardous')}</option>
+                    <option value="false">{t('nonHazardous')}</option>
                   </Form.Select>
                 </Col>
 
-                <Col md={6} lg={3} className="mb-3">
-                  <Form.Label>Min Size (meters)</Form.Label>
+                <Col xs={12} sm={6} lg={3} className="mb-3">
+                  <Form.Label>{t('minSize')}</Form.Label>
                   <Form.Control
                     type="number"
-                    placeholder="Min diameter"
+                    placeholder={t('minDiameter')}
                     value={filters.minSize}
                     onChange={(e) => handleFilterChange('minSize', e.target.value)}
                   />
                 </Col>
 
-                <Col md={6} lg={3} className="mb-3">
-                  <Form.Label>Max Size (meters)</Form.Label>
+                <Col xs={12} sm={6} lg={3} className="mb-3">
+                  <Form.Label>{t('maxSize')}</Form.Label>
                   <Form.Control
                     type="number"
-                    placeholder="Max diameter"
+                    placeholder={t('maxDiameter')}
                     value={filters.maxSize}
                     onChange={(e) => handleFilterChange('maxSize', e.target.value)}
                   />
                 </Col>
 
-                <Col md={6} lg={3} className="mb-3">
-                  <Form.Label>Sort By</Form.Label>
+                <Col xs={12} sm={6} lg={3} className="mb-3">
+                  <Form.Label>{t('sortBy')}</Form.Label>
                   <Form.Select
                     className='text-white bg-dark'
                     value={`${filters.sortBy}-${filters.sortOrder}`}
@@ -186,12 +188,12 @@ const AsteroidExplorer = () => {
                       handleFilterChange('sortOrder', sortOrder);
                     }}
                   >
-                    <option value="calculatedProperties.averageDiameter-desc">Size (Largest First)</option>
-                    <option value="calculatedProperties.averageDiameter-asc">Size (Smallest First)</option>
-                    <option value="calculatedProperties.kineticEnergy-desc">Energy (Highest First)</option>
-                    <option value="calculatedProperties.averageVelocity-desc">Velocity (Fastest First)</option>
-                    <option value="name-asc">Name (A-Z)</option>
-                    <option value="lastUpdated-desc">Recently Updated</option>
+                    <option value="calculatedProperties.averageDiameter-desc">{t('sizeLargestFirst')}</option>
+                    <option value="calculatedProperties.averageDiameter-asc">{t('sizeSmallestFirst')}</option>
+                    <option value="calculatedProperties.kineticEnergy-desc">{t('energyHighestFirst')}</option>
+                    <option value="calculatedProperties.averageVelocity-desc">{t('velocityFastestFirst')}</option>
+                    <option value="name-asc">{t('nameAZ')}</option>
+                    <option value="lastUpdated-desc">{t('recentlyUpdated')}</option>
                   </Form.Select>
                 </Col>
               </Row>
@@ -207,90 +209,102 @@ const AsteroidExplorer = () => {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h5 className="mb-0">
                 <i className="bi bi-list me-2"></i>
-                Asteroids ({pagination.totalItems || 0})
+                {t('asteroids')} ({pagination.totalItems || 0})
               </h5>
               {loading && <div className="loading-spinner"></div>}
             </Card.Header>
 
             <Card.Body className="p-0">
               {asteroids.length > 0 ? (
-                <Table responsive variant="dark" className="mb-0">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Diameter</th>
-                      <th>Velocity</th>
-                      <th>Kinetic Energy</th>
-                      <th>Hazard Level</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {asteroids.map((asteroid) => (
-                      <tr key={asteroid._id}>
-                        <td>
-                          <div>
-                            <strong className="text-truncate d-block" style={{ maxWidth: '200px' }}>
-                              {asteroid.name}
-                            </strong>
-                            <small className="text-muted">
-                              ID: {asteroid.neo_reference_id}
-                            </small>
-                          </div>
-                        </td>
-                        <td>
-                          <strong>{formatDiameter(asteroid)}</strong>
-                        </td>
-                        <td>
-                          {formatVelocity(asteroid)}
-                        </td>
-                        <td>
-                          {formatEnergy(asteroid)}
-                        </td>
-                        <td>
-                          {asteroid.is_potentially_hazardous_asteroid ? (
-                            <Badge bg="warning" text="dark">
-                              <i className="bi bi-exclamation-triangle me-1"></i>
-                              Hazardous
-                            </Badge>
-                          ) : (
-                            <Badge bg="success">
-                              <i className="bi bi-check-circle me-1"></i>
-                              Safe
-                            </Badge>
-                          )}
-                        </td>
-                        <td>
-                          <div className="d-flex gap-2">
-                            <Button
-                              variant="outline-info"
-                              size="sm"
-                              onClick={() => window.open(asteroid.nasa_jpl_url, '_blank')}
-                              disabled={!asteroid.nasa_jpl_url}
-                            >
-                              <i className="bi bi-info-circle"></i>
-                            </Button>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={() => navigate('/simulator', { 
-                                state: { asteroidId: asteroid._id }
-                              })}
-                            >
-                              <i className="bi bi-play-circle"></i>
-                            </Button>
-                          </div>
-                        </td>
+                <div className="table-responsive">
+                  <Table responsive variant="dark" className="mb-0">
+                    <thead>
+                      <tr>
+                        <th className="d-none d-md-table-cell">{t('name')}</th>
+                        <th className="d-table-cell d-md-none">Asteroid</th>
+                        <th className="d-none d-lg-table-cell">{t('diameter')}</th>
+                        <th className="d-none d-lg-table-cell">{t('velocity')}</th>
+                        <th className="d-none d-lg-table-cell">{t('kineticEnergy')}</th>
+                        <th className="d-none d-sm-table-cell">{t('hazardLevel')}</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </Table>
+                    </thead>
+                    <tbody>
+                      {asteroids.map((asteroid) => (
+                        <tr key={asteroid._id}>
+                          <td>
+                            <div>
+                              <strong className="text-truncate d-block" style={{ maxWidth: '200px' }}>
+                                {asteroid.name}
+                              </strong>
+                              <small className="text-muted d-none d-md-block">
+                                ID: {asteroid.neo_reference_id}
+                              </small>
+                              <div className="d-block d-lg-none small">
+                                <div><strong>{t('diameter')}:</strong> {formatDiameter(asteroid)}</div>
+                                <div><strong>{t('velocity')}:</strong> {formatVelocity(asteroid)}</div>
+                                <div><strong>{t('kineticEnergy')}:</strong> {formatEnergy(asteroid)}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="d-none d-lg-table-cell">
+                            <strong>{formatDiameter(asteroid)}</strong>
+                          </td>
+                          <td className="d-none d-lg-table-cell">
+                            {formatVelocity(asteroid)}
+                          </td>
+                          <td className="d-none d-lg-table-cell">
+                            {formatEnergy(asteroid)}
+                          </td>
+                          <td className="d-none d-sm-table-cell">
+                            {asteroid.is_potentially_hazardous_asteroid ? (
+                              <Badge bg="warning" text="dark">
+                                <i className="bi bi-exclamation-triangle me-1"></i>
+                                {t('hazardous')}
+                              </Badge>
+                            ) : (
+                              <Badge bg="success">
+                                <i className="bi bi-check-circle me-1"></i>
+                                {t('safe')}
+                              </Badge>
+                            )}
+                          </td>
+                          <td>
+                            <div className="d-flex gap-1 gap-md-2 flex-wrap">
+                              <Button
+                                variant="outline-info"
+                                size="sm"
+                                onClick={() => window.open(asteroid.nasa_jpl_url, '_blank')}
+                                disabled={!asteroid.nasa_jpl_url}
+                                className="flex-fill flex-md-grow-0"
+                              >
+                                <i className="bi bi-info-circle"></i>
+                                <span className="d-none d-md-inline ms-1">Info</span>
+                              </Button>
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={() => navigate('/simulator', { 
+                                  state: { asteroidId: asteroid._id }
+                                })}
+                                className="flex-fill flex-md-grow-0"
+                              >
+                                <i className="bi bi-play-circle"></i>
+                                <span className="d-none d-md-inline ms-1">Simulate</span>
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
               ) : (
                 <div className="text-center py-5">
                   <i className="bi bi-search display-1 text-muted"></i>
-                  <h4 className="mt-3">No asteroids found</h4>
+                  <h4 className="mt-3">{t('noAsteroidsFound')}</h4>
                   <p className="text-muted">
-                    Try adjusting your search criteria or filters
+                    {t('tryAdjustingCriteria')}
                   </p>
                 </div>
               )}
@@ -301,7 +315,7 @@ const AsteroidExplorer = () => {
               <Card.Footer>
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="text-muted">
-                    Page {pagination.currentPage} of {pagination.totalPages}
+                    {t('page')} {pagination.currentPage} {t('of')} {pagination.totalPages}
                   </div>
                   <div className="d-flex gap-2">
                     <Button

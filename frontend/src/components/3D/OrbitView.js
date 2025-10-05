@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html, useTexture } from '@react-three/drei';
+import * as THREE from 'three';
 
 // 🌍 Textured Earth sphere with clouds
 const EarthSphere = () => {
@@ -15,11 +16,11 @@ const EarthSphere = () => {
   return (
     <group>
       <mesh ref={earthRef}>
-        <sphereGeometry args={[1, 48, 48]} />
+        <sphereGeometry args={[1.5, 48, 48]} />
         <meshStandardMaterial map={earthColorMap} normalMap={earthNormalMap} roughness={0.9} metalness={0.0} />
       </mesh>
       <mesh ref={cloudsRef}>
-        <sphereGeometry args={[1.015, 48, 48]} />
+        <sphereGeometry args={[1.52, 48, 48]} />
         <meshPhongMaterial map={earthClouds} transparent opacity={0.4} depthWrite={false} />
       </mesh>
     </group>
@@ -54,10 +55,12 @@ const OrbitRing = ({ a, b }) => {
 };
 
 // ☄️ One orbiting asteroid marker con órbita
-const OrbitingAsteroid = React.forwardRef(({ asteroid, index, isSelected }, refProp) => {
+const OrbitingAsteroid = React.forwardRef(({ asteroid, index, isSelected, displayOptions = {} }, refProp) => {
   const ref = useRef();
   const groupRef = useRef();
   const [hovered, setHovered] = React.useState(false);
+  const [currentPosition, setCurrentPosition] = React.useState({ x: 0, y: 0, z: 0 });
+  const [orbitalData, setOrbitalData] = React.useState({});
 
   const avgDiameter = asteroid?.calculatedProperties?.averageDiameter ||
     asteroid?.estimated_diameter?.meters?.estimated_diameter_max || 200;
@@ -73,7 +76,7 @@ const OrbitingAsteroid = React.forwardRef(({ asteroid, index, isSelected }, refP
     return Math.max(0.6, Math.min(aSemi, aSemi * factor));
   }, [aSemi, velocityKps, index]);
 
-  const size = Math.max(0.03, Math.min(0.15, (avgDiameter / 1000) * 0.05));
+  const size = Math.max(0.05, Math.min(0.25, (avgDiameter / 1000) * 0.08));
 
   const epochMs = Number(asteroid?.close_approach_data?.[0]?.epoch_date_close_approach) || 0;
   const phase = useMemo(() => {
@@ -93,11 +96,55 @@ const OrbitingAsteroid = React.forwardRef(({ asteroid, index, isSelected }, refP
     return (v / 50) * 0.7 / Math.max(0.8, (aSemi + bSemi) / 2);
   }, [velocityKps, aSemi, bSemi]);
 
+  // Calcular proximidad orbital con la Tierra
+  const calculateEarthProximity = useMemo(() => {
+    const earthRadius = 1.5; // Radio de la Tierra en la escala del modelo (actualizado)
+    const asteroidDistance = Math.sqrt(currentPosition.x**2 + currentPosition.y**2 + currentPosition.z**2);
+    const proximityKm = (asteroidDistance - earthRadius) * 6371; // Convertir a km reales
+    const proximityAU = proximityKm / 149597870.7; // Convertir a unidades astronómicas
+    
+    return {
+      distanceKm: proximityKm,
+      distanceAU: proximityAU,
+      isClose: proximityKm < 1000000, // Menos de 1 millón de km
+      isVeryClose: proximityKm < 100000, // Menos de 100,000 km
+      dangerLevel: proximityKm < 100000 ? 'HIGH' : proximityKm < 1000000 ? 'MEDIUM' : 'LOW'
+    };
+  }, [currentPosition]);
+
+  // Calcular datos orbitales en tiempo real
+  const calculateOrbitalData = useMemo(() => {
+    const orbitalPeriod = asteroid?.calculatedProperties?.orbitalPeriod || 
+      asteroid?.orbital_data?.orbital_period || null;
+    
+    const eccentricity = asteroid?.orbital_data?.eccentricity || 0.1;
+    const semiMajorAxis = asteroid?.orbital_data?.semi_major_axis || aSemi;
+    const perihelionDistance = semiMajorAxis * (1 - eccentricity);
+    const aphelionDistance = semiMajorAxis * (1 + eccentricity);
+    
+    return {
+      period: orbitalPeriod,
+      eccentricity: eccentricity,
+      semiMajorAxis: semiMajorAxis,
+      perihelionDistance: perihelionDistance,
+      aphelionDistance: aphelionDistance,
+      currentVelocity: velocityKps,
+      currentDistance: calculateEarthProximity.distanceKm
+    };
+  }, [asteroid, aSemi, velocityKps, calculateEarthProximity]);
+
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
     const theta = phase + t * angularSpeed;
     const x = Math.cos(theta) * aSemi;
     const z = Math.sin(theta) * bSemi;
+    
+    // Actualizar posición actual
+    setCurrentPosition({ x, y: 0, z });
+    
+    // Actualizar datos orbitales
+    setOrbitalData(calculateOrbitalData);
+    
     if (ref.current) ref.current.position.set(x, 0, z);
     if (refProp?.current) refProp.current.position.set(x, 0, z);
   });
@@ -136,28 +183,78 @@ const OrbitingAsteroid = React.forwardRef(({ asteroid, index, isSelected }, refP
       >
         <dodecahedronGeometry args={[size, 0]} />
         <meshStandardMaterial color={hovered ? '#e0b089' : '#b38b6d'} roughness={0.9} metalness={0.05} />
-        {hovered && (
-          <Html position={[0, 0.25 + size * 2, 0]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
-            <div style={{
-              background: 'rgba(0,0,0,0.8)',
-              color: '#fff',
-              padding: '6px 8px',
-              borderRadius: '6px',
-              fontSize: '12px',
-              border: '1px solid #444',
-              maxWidth: '260px'
-            }}>
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>
+        <Html position={[0, 0.25 + size * 2, 0]} center distanceFactor={6} style={{ pointerEvents: 'none' }}>
+          <div style={{
+            background: 'rgba(0,0,0,0.9)',
+            color: '#fff',
+            padding: '8px 10px',
+            borderRadius: '8px',
+            fontSize: '11px',
+            border: `1px solid ${calculateEarthProximity.dangerLevel === 'HIGH' ? '#ff4444' : calculateEarthProximity.dangerLevel === 'MEDIUM' ? '#ffaa00' : '#444'}`,
+            maxWidth: '300px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+            opacity: hovered ? 1 : 0.8
+          }}>
+            {/* Nombre del asteroide - siempre visible si está habilitado */}
+            {displayOptions.name && (
+              <div style={{ fontWeight: 600, marginBottom: 6, color: calculateEarthProximity.dangerLevel === 'HIGH' ? '#ff6666' : '#fff' }}>
                 {asteroid?.name || asteroid?.neo_reference_id || 'Asteroid'}
+                {displayOptions.riskLevel && calculateEarthProximity.dangerLevel === 'HIGH' && (
+                  <span style={{ color: '#ff4444', marginLeft: '8px' }}>⚠️ HIGH RISK</span>
+                )}
               </div>
-              <div style={{ opacity: 0.9 }}>
+            )}
+            
+            {/* Información básica */}
+            <div style={{ opacity: 0.9 }}>
+              {displayOptions.diameter && (
                 <div><b>Diameter:</b> {diameterM ? `${diameterM.toFixed(0)} m` : 'N/A'}</div>
+              )}
+              {displayOptions.velocity && (
                 <div><b>Velocity:</b> {velocityKmS ? `${velocityKmS.toFixed(2)} km/s` : 'N/A'}</div>
+              )}
+              {displayOptions.kineticEnergy && (
                 <div><b>Kinetic Energy:</b> {kineticEnergyJ ? `${kineticEnergyJ.toExponential(2)} J` : 'N/A'}</div>
-              </div>
+              )}
+              
+              {/* Separador solo si hay información de proximidad */}
+              {(displayOptions.distanceToEarth || displayOptions.distanceAU || displayOptions.riskLevel) && (
+                <>
+                  <hr style={{ margin: '4px 0', borderColor: '#555' }} />
+                  <div style={{ color: calculateEarthProximity.isVeryClose ? '#ff6666' : calculateEarthProximity.isClose ? '#ffaa00' : '#66ff66' }}>
+                    {displayOptions.distanceToEarth && (
+                      <div><b>Distance to Earth:</b> {calculateEarthProximity.distanceKm.toFixed(0)} km</div>
+                    )}
+                    {displayOptions.distanceAU && (
+                      <div><b>Distance (AU):</b> {calculateEarthProximity.distanceAU.toFixed(6)} AU</div>
+                    )}
+                    {displayOptions.riskLevel && (
+                      <div><b>Risk Level:</b> {calculateEarthProximity.dangerLevel}</div>
+                    )}
+                  </div>
+                </>
+              )}
+              
+              {/* Separador solo si hay información orbital */}
+              {(displayOptions.orbitalPeriod || displayOptions.eccentricity || displayOptions.semiMajorAxis) && (
+                <>
+                  <hr style={{ margin: '4px 0', borderColor: '#555' }} />
+                  <div style={{ color: '#88ccff' }}>
+                    {displayOptions.orbitalPeriod && (
+                      <div><b>Orbital Period:</b> {orbitalData.period ? `${orbitalData.period.toFixed(1)} days` : 'N/A'}</div>
+                    )}
+                    {displayOptions.eccentricity && (
+                      <div><b>Eccentricity:</b> {orbitalData.eccentricity ? orbitalData.eccentricity.toFixed(3) : 'N/A'}</div>
+                    )}
+                    {displayOptions.semiMajorAxis && (
+                      <div><b>Semi-Major Axis:</b> {orbitalData.semiMajorAxis ? `${orbitalData.semiMajorAxis.toFixed(2)} AU` : 'N/A'}</div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-          </Html>
-        )}
+          </div>
+        </Html>
         {isSelected && (
           <mesh position={[0, size * 2.7, 0]}>
             <coneGeometry args={[size * 1.2, size * 2.2, 3]} />
@@ -169,16 +266,99 @@ const OrbitingAsteroid = React.forwardRef(({ asteroid, index, isSelected }, refP
   );
 });
 
-// 🌌 Fondo estrellado
-const StarsBackground = () => (
-  <mesh>
-    <sphereGeometry args={[60, 32, 32]} />
-    <meshBasicMaterial color="#000010" side={1} />
-  </mesh>
-);
+// 🌌 Fondo estrellado mejorado
+const StarsBackground = () => {
+  const starsRef = useRef();
+  
+  // Crear geometría de estrellas
+  const starsGeometry = useMemo(() => {
+    const geometry = new THREE.BufferGeometry();
+    const starCount = 2000;
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3);
+    
+    for (let i = 0; i < starCount; i++) {
+      // Posiciones esféricas aleatorias
+      const radius = 50 + Math.random() * 20; // Radio entre 50-70
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = radius * Math.cos(phi);
+      
+      // Colores de estrellas (blanco, azul, amarillo)
+      const colorChoice = Math.random();
+      if (colorChoice < 0.7) {
+        // Estrellas blancas
+        colors[i * 3] = 1;
+        colors[i * 3 + 1] = 1;
+        colors[i * 3 + 2] = 1;
+      } else if (colorChoice < 0.9) {
+        // Estrellas azules
+        colors[i * 3] = 0.7;
+        colors[i * 3 + 1] = 0.8;
+        colors[i * 3 + 2] = 1;
+      } else {
+        // Estrellas amarillas
+        colors[i * 3] = 1;
+        colors[i * 3 + 1] = 0.9;
+        colors[i * 3 + 2] = 0.7;
+      }
+    }
+    
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    return geometry;
+  }, []);
+
+  return (
+    <group>
+      {/* Fondo espacial base */}
+      <mesh>
+        <sphereGeometry args={[80, 32, 32]} />
+        <meshBasicMaterial color="#000005" side={1} />
+      </mesh>
+      
+      {/* Estrellas */}
+      <points ref={starsRef} geometry={starsGeometry}>
+        <pointsMaterial 
+          size={0.5} 
+          sizeAttenuation={true}
+          vertexColors={true}
+          transparent={true}
+          opacity={0.8}
+        />
+      </points>
+      
+      {/* Nebulosa/galaxia de fondo */}
+      <mesh position={[30, 20, -40]}>
+        <planeGeometry args={[40, 30]} />
+        <meshBasicMaterial 
+          color="#1a0a2e" 
+          transparent={true} 
+          opacity={0.3}
+          side={2}
+        />
+      </mesh>
+      
+      {/* Nebulosa adicional */}
+      <mesh position={[-25, -15, -35]}>
+        <planeGeometry args={[30, 25]} />
+        <meshBasicMaterial 
+          color="#16213e" 
+          transparent={true} 
+          opacity={0.2}
+          side={2}
+        />
+      </mesh>
+    </group>
+  );
+};
 
 // 🎥 Escena principal
-const Scene = ({ asteroids = [], selectedAsteroid }) => {
+const Scene = ({ asteroids = [], selectedAsteroid, displayOptions = {} }) => {
   const asteroidRef = useRef();
   const { camera } = useThree();
 
@@ -207,6 +387,7 @@ const Scene = ({ asteroids = [], selectedAsteroid }) => {
             index={i}
             isSelected={selectedAsteroid && asteroids.length === 1 && (a._id === selectedAsteroid._id)}
             ref={asteroids.length === 1 ? asteroidRef : undefined}
+            displayOptions={displayOptions}
           />
         ))}
       </group>
@@ -217,10 +398,10 @@ const Scene = ({ asteroids = [], selectedAsteroid }) => {
 };
 
 // 🪐 Contenedor principal con Canvas
-const OrbitView = ({ asteroids = [], selectedAsteroid }) => (
+const OrbitView = ({ asteroids = [], selectedAsteroid, displayOptions = {} }) => (
   <div style={{ width: '100%', height: '600px', borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
     <Canvas shadows camera={{ position: [0, 3, 10], fov: 50 }}>
-      <Scene asteroids={asteroids} selectedAsteroid={selectedAsteroid} />
+      <Scene asteroids={asteroids} selectedAsteroid={selectedAsteroid} displayOptions={displayOptions} />
     </Canvas>
   </div>
 );

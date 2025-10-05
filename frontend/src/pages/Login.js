@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const Login = () => {
   const [error, setError] = useState('');
 
   const { login } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -45,16 +47,16 @@ const Login = () => {
   };
 
   return (
-    <Container className="py-5" style={{ marginTop: '100px' }}>
+    <Container className="py-4 py-md-5" style={{ marginTop: '80px' }}>
       <Row className="justify-content-center">
-        <Col md={6} lg={5}>
+        <Col xs={12} sm={10} md={8} lg={6} xl={5}>
           <Card className="glass-effect">
             <Card.Header className="text-center">
               <h3 className="mb-0">
                 <i className="bi bi-rocket-takeoff me-2"></i>
-                Welcome Back
+                {t('welcomeBack')}
               </h3>
-              <p className="text-muted mt-2">Sign in to continue your asteroid research</p>
+              <p className="text-muted mt-2">{t('signInToContinue')}</p>
             </Card.Header>
             
             <Card.Body>
@@ -69,14 +71,14 @@ const Login = () => {
                 <Form.Group className="mb-3">
                   <Form.Label>
                     <i className="bi bi-envelope me-2"></i>
-                    Email Address
+                    {t('emailAddress')}
                   </Form.Label>
                   <Form.Control
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="Enter your email"
+                    placeholder={t('enterYourEmail')}
                     required
                     autoFocus
                   />
@@ -85,14 +87,14 @@ const Login = () => {
                 <Form.Group className="mb-4">
                   <Form.Label>
                     <i className="bi bi-lock me-2"></i>
-                    Password
+                    {t('password')}
                   </Form.Label>
                   <Form.Control
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
+                    placeholder={t('enterYourPassword')}
                     required
                   />
                 </Form.Group>
@@ -107,12 +109,12 @@ const Login = () => {
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" />
-                      Signing In...
+                      {t('signingIn')}
                     </>
                   ) : (
                     <>
                       <i className="bi bi-box-arrow-in-right me-2"></i>
-                      Sign In
+                      {t('signIn')}
                     </>
                   )}
                 </Button>
@@ -121,9 +123,9 @@ const Login = () => {
             
             <Card.Footer className="text-center">
               <p className="mb-0">
-                Don't have an account?{' '}
+                {t('dontHaveAccount')}{' '}
                 <Link to="/register" className="text-decoration-none">
-                  <strong>Sign up now</strong>
+                  <strong>{t('signUpNow')}</strong>
                 </Link>
               </p>
             </Card.Footer>
@@ -134,11 +136,11 @@ const Login = () => {
             <Card.Body className="text-center">
               <h6 className="text-muted mb-2">
                 <i className="bi bi-info-circle me-2"></i>
-                Demo Credentials
+                {t('demoCredentials')}
               </h6>
               <p className="mb-1"><strong>Email:</strong> demo@astroimpact.com</p>
               <p className="mb-0"><strong>Password:</strong> demo123</p>
-              <small className="text-muted">Use these credentials to test the application</small>
+              <small className="text-muted">{t('useTheseCredentials')}</small>
             </Card.Body>
           </Card>
         </Col>

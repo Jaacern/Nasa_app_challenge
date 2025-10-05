@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card, Button, Form, Alert, Badge, Modal } from 'react-bootstrap';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+// useMapEvents se usa en MapClickHandler.js
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import L from 'leaflet';
 import { AuthContext } from '../context/AuthContext';
 import { SafeEarth3D, SafeAsteroid3D, SafeImpact3D, SafeEnhancedImpact3D, is3DSupported } from '../components/3D';
+import MapWithAutoFit from '../components/MapWithAutoFit';
+import MapClickHandler from '../components/MapClickHandler';
 import api from '../utils/api';
 import 'leaflet/dist/leaflet.css';
 
@@ -30,15 +32,7 @@ const impactIcon = new L.Icon({
   iconAnchor: [16, 16],
 });
 
-// Map click handler component
-const MapClickHandler = ({ onLocationSelect }) => {
-  useMapEvents({
-    click: (e) => {
-      onLocationSelect(e.latlng);
-    },
-  });
-  return null;
-};
+// MapClickHandler ahora está en su propio archivo
 
 const Simulator = () => {
   const { user } = useContext(AuthContext);
@@ -124,7 +118,7 @@ const Simulator = () => {
     setLoading(true);
     try {
       const simulationData = {
-        asteroidId: selectedAsteroid.id,
+        asteroidId: selectedAsteroid._id,
         impactLocation,
         impactAngle,
         impactVelocity,
@@ -213,16 +207,18 @@ const Simulator = () => {
                 <Form.Label>Select Asteroid</Form.Label>
                 <Form.Select
                   className='text-white bg-dark'
-                  value={selectedAsteroid?.id || ''}
+                  value={selectedAsteroid?._id || ''}
                   onChange={(e) => {
-                    const asteroid = asteroids.find(a => a.id === e.target.value);
+                    const asteroid = asteroids.find(a => a._id === e.target.value);
                     setSelectedAsteroid(asteroid);
                   }}
                 >
                   <option value="">Choose an asteroid...</option>
                   {asteroids.map((asteroid) => (
-                    <option key={asteroid.id} value={asteroid.id}>
-                      {asteroid.name} ({asteroid.estimatedDiameter?.kilometers?.estimated_diameter_max?.toFixed(2) || '?'} km)
+                    <option key={asteroid._id} value={asteroid._id}>
+                      {asteroid.name} ({asteroid.calculatedProperties?.averageDiameter ? 
+                        (asteroid.calculatedProperties.averageDiameter / 1000).toFixed(2) : 
+                        '?'} km)
                     </option>
                   ))}
                 </Form.Select>
@@ -233,14 +229,16 @@ const Simulator = () => {
                   <Card.Body className="p-3">
                     <h6 className="text-primary">{selectedAsteroid.name}</h6>
                     <small className="text-muted text-white d-block">
-                      <strong>Diameter:</strong> {selectedAsteroid.estimatedDiameter?.kilometers?.estimated_diameter_max?.toFixed(2) || 'Unknown'} km
+                      <strong>Diameter:</strong> {selectedAsteroid.calculatedProperties?.averageDiameter ? 
+                        (selectedAsteroid.calculatedProperties.averageDiameter / 1000).toFixed(2) : 
+                        'Unknown'} km
                     </small>
                     <small className="text-muted text-white d-block">
-                      <strong>Hazardous:</strong> {selectedAsteroid.isPotentiallyHazardousAsteroid ? 'Yes' : 'No'}
+                      <strong>Hazardous:</strong> {selectedAsteroid.is_potentially_hazardous_asteroid ? 'Yes' : 'No'}
                     </small>
-                    {selectedAsteroid.closeApproachData?.[0] && (
+                    {selectedAsteroid.calculatedProperties?.averageVelocity && (
                       <small className="text-muted text-white d-block">
-                        <strong>Velocity:</strong> {parseFloat(selectedAsteroid.closeApproachData[0].relativeVelocity?.kilometersPerSecond || 0).toFixed(1)} km/s
+                        <strong>Velocity:</strong> {selectedAsteroid.calculatedProperties.averageVelocity.toFixed(1)} km/s
                       </small>
                     )}
                   </Card.Body>
@@ -361,24 +359,46 @@ const Simulator = () => {
             </Card.Header>
             
             <Card.Body className="p-0">
-              <div style={{ height: '500px', width: '100%' }}>
+              <div style={{ height: '500px', width: '100%', position: 'relative' }}>
                 {/* 2D Map View */}
                 {viewMode === '2d' && (
-                  <MapContainer
-                    center={[impactLocation.lat, impactLocation.lng]}
-                    zoom={6}
-                    style={{ height: '100%', width: '100%' }}
-                  >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  <>
+                    <MapWithAutoFit
+                      impactLocation={impactLocation}
+                      simulationResults={simulationResults}
+                      selectedAsteroid={selectedAsteroid}
+                      impactAngle={impactAngle}
+                      impactVelocity={impactVelocity}
+                      onLocationSelect={handleLocationSelect}
                     />
-                    <MapClickHandler onLocationSelect={handleLocationSelect} />
-                    <Marker 
-                      position={[impactLocation.lat, impactLocation.lng]} 
-                      icon={impactIcon}
-                    />
-                  </MapContainer>
+                    
+                    {/* Debug info - temporal */}
+                    {simulationResults && (
+                      <div style={{ 
+                        position: 'absolute', 
+                        top: '10px', 
+                        left: '10px', 
+                        background: 'rgba(0,0,0,0.8)', 
+                        color: 'white', 
+                        padding: '10px', 
+                        borderRadius: '5px',
+                        fontSize: '12px',
+                        zIndex: 1000
+                      }}>
+                        <div>Simulation Results: {simulationResults ? 'YES' : 'NO'}</div>
+                        <div>Results Object: {simulationResults?.results ? 'YES' : 'NO'}</div>
+                        <div>Severity: {simulationResults?.results?.severity || simulationResults?.severity || 'NONE'}</div>
+                        <div>Crater Diameter: {simulationResults?.results?.craterDiameter || simulationResults?.craterDiameter || 'NONE'}</div>
+                        <div>Affected Area: {simulationResults?.results?.affectedArea || simulationResults?.affectedArea || 'NONE'}</div>
+                        <div>Impact Location: {impactLocation ? `${impactLocation.lat.toFixed(4)}, ${impactLocation.lng.toFixed(4)}` : 'NONE'}</div>
+                        <div>Selected Asteroid: {selectedAsteroid?.name || 'NONE'}</div>
+                        <div>Asteroid Diameter: {selectedAsteroid?.calculatedProperties?.averageDiameter ? 
+                          (selectedAsteroid.calculatedProperties.averageDiameter / 1000).toFixed(2) + ' km' : 'NONE'}</div>
+                        <div>Impact Angle: {impactAngle}°</div>
+                        <div>Impact Velocity: {impactVelocity} km/s</div>
+                      </div>
+                    )}
+                  </>
                 )}
                 
                 {/* 3D Earth View */}
@@ -501,8 +521,9 @@ const Simulator = () => {
       <Modal 
         show={showResults} 
         onHide={() => setShowResults(false)} 
-        size="lg"
+        size="md"
         centered
+        className="impact-results-modal"
       >
         <Modal.Header closeButton className="bg-dark border-secondary">
           <Modal.Title>
@@ -513,23 +534,23 @@ const Simulator = () => {
         <Modal.Body className="bg-dark text-light">
           {simulationResults && (
             <>
-              <Row className="mb-4">
-                <Col md={6}>
-                  <Card className="bg-dark border-secondary">
-                    <Card.Body>
-                      <h6 className="text-primary">Impact Energy</h6>
-                      <h4>{formatNumber(simulationResults.results.energy)} Joules</h4>
+              <Row className="mb-3">
+                <Col xs={6} md={6}>
+                  <Card className="bg-dark border-secondary mb-2">
+                    <Card.Body className="p-2">
+                      <h6 className="text-primary mb-1">Impact Energy</h6>
+                      <h5 className="mb-1">{formatNumber(simulationResults.results.energy)} J</h5>
                       <small className="text-muted text-white">
-                        TNT Equivalent: {formatNumber(simulationResults.results.tntEquivalent)} tons
+                        TNT: {formatNumber(simulationResults.results.tntEquivalent)} tons
                       </small>
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md={6}>
-                  <Card className="bg-dark border-secondary">
-                    <Card.Body>
-                      <h6 className="text-warning">Crater Diameter</h6>
-                      <h4>{simulationResults.results.craterDiameter.toFixed(1)} km</h4>
+                <Col xs={6} md={6}>
+                  <Card className="bg-dark border-secondary mb-2">
+                    <Card.Body className="p-2">
+                      <h6 className="text-warning mb-1">Crater</h6>
+                      <h5 className="mb-1">{simulationResults.results.craterDiameter.toFixed(1)} km</h5>
                       <small className="text-muted text-white">
                         Depth: {simulationResults.results.craterDepth.toFixed(1)} km
                       </small>
@@ -538,53 +559,60 @@ const Simulator = () => {
                 </Col>
               </Row>
 
-              <Row className="mb-4">
-                <Col>
-                  <h6>Impact Severity</h6>
-                  <Badge bg={getSeverityColor(simulationResults.results.severity)} className="fs-6 p-2">
-                    {simulationResults.results.severity.toUpperCase()}
-                  </Badge>
+              <Row className="mb-3">
+                <Col xs={12}>
+                  <div className="d-flex align-items-center justify-content-between">
+                    <h6 className="mb-0">Impact Severity</h6>
+                    <Badge bg={getSeverityColor(simulationResults.results.severity)} className="fs-6 px-3 py-2">
+                      {simulationResults.results.severity.toUpperCase()}
+                    </Badge>
+                  </div>
                 </Col>
               </Row>
 
-              <Row className="mb-4">
-                <Col md={4}>
-                  <Card className="bg-dark border-secondary">
-                    <Card.Body className="text-center">
-                      <h6 className="text-danger">Affected Area</h6>
-                      <h5>{formatNumber(simulationResults.results.affectedArea)} km²</h5>
+              <Row className="mb-3">
+                <Col xs={4}>
+                  <Card className="bg-dark border-secondary mb-2">
+                    <Card.Body className="p-2 text-center">
+                      <h6 className="text-danger mb-1">Area</h6>
+                      <h6>{formatNumber(simulationResults.results.affectedArea)} km²</h6>
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md={4}>
-                  <Card className="bg-dark border-secondary">
-                    <Card.Body className="text-center">
-                      <h6 className="text-warning">Estimated Casualties</h6>
-                      <h5>{formatNumber(simulationResults.results.estimatedCasualties)}</h5>
+                <Col xs={4}>
+                  <Card className="bg-dark border-secondary mb-2">
+                    <Card.Body className="p-2 text-center">
+                      <h6 className="text-warning mb-1">Casualties</h6>
+                      <h6>{formatNumber(simulationResults.results.estimatedCasualties)}</h6>
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md={4}>
-                  <Card className="bg-dark border-secondary">
-                    <Card.Body className="text-center">
-                      <h6 className="text-info">Economic Impact</h6>
-                      <h5>${formatNumber(simulationResults.results.economicImpact)}</h5>
+                <Col xs={4}>
+                  <Card className="bg-dark border-secondary mb-2">
+                    <Card.Body className="p-2 text-center">
+                      <h6 className="text-info mb-1">Economic</h6>
+                      <h6>${formatNumber(simulationResults.results.economicImpact)}</h6>
                     </Card.Body>
                   </Card>
                 </Col>
               </Row>
 
               {simulationResults.results.mitigationStrategies && (
-                <div className="mt-4">
-                  <h6>Recommended Mitigation Strategies</h6>
-                  <ul className="list-unstyled">
-                    {simulationResults.results.mitigationStrategies.map((strategy, index) => (
-                      <li key={index} className="mb-2">
-                        <Badge bg="info" className="me-2">{index + 1}</Badge>
-                        {strategy}
-                      </li>
+                <div className="mt-3">
+                  <h6 className="mb-2">Recommended Actions</h6>
+                  <div className="max-height-200 overflow-auto">
+                    {simulationResults.results.mitigationStrategies.slice(0, 5).map((strategy, index) => (
+                      <div key={index} className="mb-1 d-flex align-items-start">
+                        <Badge bg="info" className="me-2 mt-1" style={{ fontSize: '0.7rem' }}>{index + 1}</Badge>
+                        <small className="text-muted">{strategy}</small>
+                      </div>
                     ))}
-                  </ul>
+                    {simulationResults.results.mitigationStrategies.length > 5 && (
+                      <small className="text-muted">
+                        ...and {simulationResults.results.mitigationStrategies.length - 5} more strategies
+                      </small>
+                    )}
+                  </div>
                 </div>
               )}
             </>

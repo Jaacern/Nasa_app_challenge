@@ -18,6 +18,7 @@ import VR from './pages/VR';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import { useAuth } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 function App() {
   const { user, loading } = useAuth();
@@ -31,9 +32,10 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <Navigation />
-      <main className="main-content">
+    <LanguageProvider>
+      <div className="App">
+        <Navigation />
+        <main className="main-content">
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -85,8 +87,9 @@ function App() {
             } 
           />
         </Routes>
-      </main>
-    </div>
+        </main>
+      </div>
+    </LanguageProvider>
   );
 }
 
